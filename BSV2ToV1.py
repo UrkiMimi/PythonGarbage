@@ -1,19 +1,23 @@
 import json
 import os
+from colorama import *
 
 infoNew = json.loads('{}')
-debug = True
-
+debug = False
+sucessCount = 0
 
 #list current directory
 direcList = os.listdir()
+
+#for color text
+init()
 
 for currentDir in direcList:
     try:
         # region info data stuff
         with open(currentDir + '\Info.dat', 'r') as infoFile:
             infoOld = json.loads(infoFile.read())
-
+        
         # import info data over
         infoNew['songName'] = infoOld['_songName']
         infoNew['songSubName'] = infoOld['_songSubName']
@@ -114,15 +118,20 @@ for currentDir in direcList:
             if os.path.exists(currentDir + '\\'+ 'Info.dat'):
                 os.remove(currentDir + '\\' + 'Info.dat')
             else:
-                print('i farted')
+                print(Fore.RED + 'Unable to delete old map files.')
 
             for i in diffList:
-                os.remove(currentDir + '\\' + i['jsonPath'].replace('json', 'dat'))
+                if os.path.exists(currentDir + '\\' + i['jsonPath'].replace('json', 'dat')):
+                    os.remove(currentDir + '\\' + i['jsonPath'].replace('json', 'dat'))
 
         # rename audio file if possible
         if os.path.exists(currentDir + '\\' +infoOld['_songFilename']):
             os.rename(currentDir + '\\' + infoOld['_songFilename'],currentDir + '\\' + 'song.ogg')
 
         print('Sucessfully converted ' + currentDir)
+        sucessCount+=1
     except:
-        print('Unable to convert ' + str(currentDir) + '. This may not be a valid map folder or something horribly went wrong')
+        print(Fore.RED + 'Unable to convert ' + str(currentDir) + '. This may not be a valid map folder or something horribly went wrong')
+
+print(Fore.BLUE + 'Sucessfully converted ' + str(sucessCount) + ' maps.')
+input('')
