@@ -2,17 +2,7 @@ import pygame, sys, math
 import random as rand
 from scipy import signal
 import numpy as np
-
-# init
-pygame.init()
-window = pygame.display.set_mode((480, 360), 0, 0)
-pygame.display.set_caption("sorting algorithm but i spilled milk on it")
-pygame.mixer.init(22050, size=-16, channels=1, buffer=512)
-
-
-# timing init
-clock = pygame.time.Clock()
-
+from copy import deepcopy
 
 # constants
 RED = (255, 0, 0)
@@ -20,20 +10,41 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 SAMPLE_RATE = 22050
 LINES = 100
+HIGHPOINT = 1000
+SCREEN_RES = (600, 400)
+
+
+# init
+pygame.init()
+window = pygame.display.set_mode(SCREEN_RES, 0, 0)
+pygame.display.set_caption("sorting algorithm but i spilled milk on it")
+pygame.mixer.init(SAMPLE_RATE, size=-16, channels=1, buffer=512)
+
+
+# timing init
+clock = pygame.time.Clock()
+
+
 
 # make array
 array = []
 for i in range(LINES):
-    array.append((i/LINES)*100)
+    array.append(round((i/LINES)*HIGHPOINT))
 
 
 # region functions
 # real
 def draw_everything(pick = 0):
     # setup
-    pSize = 480 / len(array)
-    scale = 360 / 100
+    pSize = SCREEN_RES[0] / len(array)
+    xSize = SCREEN_RES[0] / len(array)
+    scale = SCREEN_RES[1] / HIGHPOINT
     color = WHITE
+
+    # pygame sucks and wont display things below one pixel so this stopgap fixes that for now
+    # this is also the reason why xsize exists even though its redundant
+    if pSize < 1:
+        pSize = 1
 
     # draw everything
     for x in range(len(array)):
@@ -42,7 +53,7 @@ def draw_everything(pick = 0):
         else:
             color = WHITE
 
-        pygame.draw.rect(window, color, (x * pSize, 360 - (array[x] * scale), pSize, 360))
+        pygame.draw.rect(window, color, (x * xSize, SCREEN_RES[1] - (array[x] * scale), pSize, SCREEN_RES[1]))
 
 
 # FUCK
@@ -62,7 +73,8 @@ def generate_wave(freq, duration=0.1, vol=0.3):
     return pygame.sndarray.make_sound(wave)
 
 def value_to_tone(value):
-    return (array[value] * 4)  + 200
+    ratio = (HIGHPOINT)/100
+    return ((array[value] * 4) / ratio)  + 200
 
 
 
@@ -73,13 +85,13 @@ def screenRefresh(pick = 0, playAudio = True):
             pygame.quit()
             sys.exit()
     
-    clock.tick(240)
+    clock.tick(60)
     window.fill(BLACK)
     draw_everything(pick)
 
     # generate audio shit idk fhdsajkfhdsjklfdaskl
     if playAudio: 
-        pygame.mixer.stop()
+        #pygame.mixer.stop()
         generate_wave(value_to_tone(pick)).play()
     pygame.display.flip()
 
@@ -115,7 +127,7 @@ def insertionSort():
             
             rate+=1
 
-            if (rate % 20) == 0:
+            if (rate % 10) == 0:
                 screenRefresh(j)
 
         # replace
@@ -129,9 +141,10 @@ def divisionSort():
 
     # sort 
     while (array != base):
+        # up
         for i in range(len(array)):
             one = i
-            two = math.floor(one / rand.uniform(1, 1.2))
+            two = math.floor(one / rand.uniform(1, 1.5))
 
             # array
             if (array[one] < array[two]):
@@ -139,8 +152,8 @@ def divisionSort():
                 array[one] = array[two]
                 array[two] = bkup
 
-                if (i % 5) == 0:
-                    screenRefresh(one)
+            if (i % 3) == 0:
+                screenRefresh(one)
 
 
 # cocktail sort
@@ -161,7 +174,7 @@ def cocktailSort():
                 array[i], array[i+1] = array[i+1], array[i]
                 swap = True
 
-                if (i % 20) == 0:
+                if (i % 10) == 0:
                     screenRefresh(i)
 
         # then to left
@@ -170,17 +183,20 @@ def cocktailSort():
                 array[i], array[i+1] = array[i+1], array[i]
                 swap = True
 
-                if (i % 20) == 0:
-                    screenRefresh(i)
+                if (i % 10) == 0:
+                    screenRefresh(i-1)
+
 
 
 # region program
 shuffle()
+#array.reverse()
 pygame.time.wait(500)
 
-insertionSort()
-#divisionSort()
+#insertionSort()
+divisionSort()
 #cocktailSort()
+#radixSort()
 
 while True: 
     screenRefresh(playAudio=False)
