@@ -19,11 +19,12 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 SAMPLE_RATE = 22050
+LINES = 100
 
 # make array
 array = []
-for i in range(480):
-    array.append((i/480)*100)
+for i in range(LINES):
+    array.append((i/LINES)*100)
 
 
 # region functions
@@ -177,9 +178,9 @@ def cocktailSort():
 shuffle()
 pygame.time.wait(500)
 
-#insertionSort()
+insertionSort()
 #divisionSort()
-cocktailSort()
+#cocktailSort()
 
 while True: 
     screenRefresh(playAudio=False)
