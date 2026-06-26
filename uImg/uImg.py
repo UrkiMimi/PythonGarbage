@@ -60,5 +60,5 @@ def imageToArray(imagePath):
 
 
 with open('smoker.uim' , 'wb') as f:
-   imgArray = imageToArray('smoker.jpg')
-   f.write(uImg(399,399,imgArray))
+   imgArray = imageToArray('image copy.png')
+   f.write(uImg(1546,1252,imgArray))

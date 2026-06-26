@@ -2,7 +2,7 @@
 import pygame, sys, zlib
 
 # open image 
-with open('smoker.uim', 'rb') as f:
+with open('tachyon.uim', 'rb') as f:
     uim = list(f.read())
 
 # get width and height
