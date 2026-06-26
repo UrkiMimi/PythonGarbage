@@ -3,6 +3,9 @@ import pygame, json, sys
 # constants
 WIDTH = 512
 HEIGHT = 400
+SCALE_X = WIDTH / 256
+SCALE_Y = HEIGHT / 200
+
 
 # initialization
 pygame.init()
@@ -59,10 +62,10 @@ class rendering:
             clrStr = js.colors[tri['ci']]
             clr = pygame.Color(clrStr)
             
+            pygame.draw.polygon(screen, clr,  [[v1['x'] * SCALE_X, v1['y'] * SCALE_Y],
+                                                [v2['x'] * SCALE_X, v2['y'] * SCALE_Y],
+                                                [v3['x'] * SCALE_X, v3['y'] * SCALE_Y]])
 
-            pygame.draw.polygon(screen, clr,  [[v1['x'] * 2, v1['y'] * 2],
-                                                [v2['x'] * 2, v2['y'] * 2],
-                                                [v3['x'] * 2, v3['y'] * 2]])
 
         # vertex portion
         for index in range(len(triDat)-2):
@@ -75,10 +78,9 @@ class rendering:
             clrStr = js.colors[tri['ci']]
             clr = pygame.Color(clrStr)
             
-
-            pygame.draw.polygon(screen, clr,  [[v1['x'] * 2, v1['y'] * 2],
-                                                [v2['x'] * 2, v2['y'] * 2],
-                                                [v3['x'] * 2, v3['y'] * 2]])
+            pygame.draw.polygon(screen, clr,  [[v1['x'] * SCALE_X, v1['y'] * SCALE_Y],
+                                                [v2['x'] * SCALE_X, v2['y'] * SCALE_Y],
+                                                [v3['x'] * SCALE_X, v3['y'] * SCALE_Y]])
 
 # endregion
 
@@ -113,6 +115,4 @@ while True:
 
     rendering.render_frame(frame)
     pygame.display.flip()
-    clock.tick(60)
-
     
