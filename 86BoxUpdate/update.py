@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import zipfile
+from tqdm import tqdm
 
 URL = "https://ci.86box.net/job/86Box/lastSuccessfulBuild/api/json"
 ROMS_URL = "https://github.com/86Box/roms.git"
@@ -11,10 +12,12 @@ COMPILER = "Old"
 INCLUDE_ASSETS = True
 
 
+
 # get and load request 
+print('Pulling latest build from Jenkins...')
 buildRequest = requests.get(URL)
 artifactJson = buildRequest.json()
-
+print('Jenkins pull complete.')
 
 # determine which version to pull
 for artifacts in artifactJson['artifacts']:
@@ -26,16 +29,24 @@ for artifacts in artifactJson['artifacts']:
 
 # download the determined version 
 # TODO: don't download if hash exists
-print('Pulling latest build...')
-with open('build.zip', 'wb') as f:
-    buildZip = requests.get(f'https://ci.86box.net/job/86Box/lastSuccessfulBuild/artifact/{finalPath}')
-    f.write(buildZip.content)
+buildZip = requests.get(f'https://ci.86box.net/job/86Box/lastSuccessfulBuild/artifact/{finalPath}', stream=True)
+blockTotal = int(buildZip.headers.get('content-length', 0)) # total file size in bytes
+
+# show progress bar with tqdm
+with tqdm(total=blockTotal, unit='B', unit_scale=True, desc='Pulling latest build ') as pb:
+    with open('build.zip', 'wb') as f:
+        for data in buildZip.iter_content(1024): # 1024 is 1 kibybite
+            f.write(data)
+            pb.update(len(data))
 
 
 # unzip build
-print('Unzipping...')
 with zipfile.ZipFile('build.zip', 'r') as buildZip:
-    buildZip.extractall('.')
+    for member in tqdm(buildZip.infolist(), desc='Extracting build '):
+        try:
+            buildZip.extract(member, '.')
+        except zipfile.error as e:
+            pass
 
 # remove zip artifact
 os.remove('build.zip')
