@@ -1,0 +1,59 @@
+/*fonts*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* BG */
+body {
+    background-color: #5f6263;
+    background-image: radial-gradient(#00000000, #00000048);
+    font-family: 'Roboto', 'Arial';
+
+    /*text*/
+    color: #ffffff;
+    text-shadow: 0px -1px 1px #000000 0px 1px 2px #000000;
+    padding-top: 44px;
+    font-size: 14px;
+}
+
+/*page header bar*/
+.header {
+    position: fixed;
+    top: 0;
+    left: 0px;
+    height: 44px;
+    width: 100%;
+    padding-bottom: 0px;
+    background-image: linear-gradient(180deg,rgba(36, 36, 36, 0.69) 0%, rgba(15, 15, 15, 0.78) 50%, rgba(0, 0, 0, 0.82) 50.01%, rgba(33, 33, 33, 0.86) 100%);
+    background-repeat: repeat-x;
+    box-shadow: 4px 4px 8px #00000054;
+}
+
+.header h1 {
+    color: #fefefe;
+    padding: 0px;
+    font-weight: 5600;
+    font-size: 20px;
+    margin-top: 10;
+    text-align: center;
+    text-shadow: 0px 1px 2px rgb(0, 0, 0);
+}
+
+.content-box {
+    background-color: white;
+    overflow: scroll;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    max-width: 304px;
+    margin: auto;
+    color: black;
+
+
+    border-radius: 5px;
+    border-color: 1px solid black;
+}
+
+.content-box::-webkit-scrollbar
+{
+    display: none;
+    scrollbar-width: none;
+}
