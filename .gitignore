@@ -1,0 +1,7 @@
+# mac specific
+.DS_Store
+._*
+.Trashes
+
+# python stuff
+__pycache__/

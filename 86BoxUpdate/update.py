@@ -2,15 +2,16 @@ import os
 import json
 import requests
 import zipfile
+import subprocess
 from tqdm import tqdm
 
 URL = "https://ci.86box.net/job/86Box/lastSuccessfulBuild/api/json"
 ROMS_URL = "https://github.com/86Box/roms.git"
 ASSETS_URL = "https://github.com/86Box/assets.git"
-BUILDTYPE = "Windows"
-COMPILER = "Old"
+BUILDTYPE = "macOS"
+ARCH = "arm64"
+ASSETS_PATH = "~/Library/Application Support/86Box"
 INCLUDE_ASSETS = True
-
 
 
 # get and load request 
@@ -23,7 +24,7 @@ print('Jenkins pull complete.')
 for artifacts in artifactJson['artifacts']:
     path = artifacts['relativePath']
 
-    if (BUILDTYPE in path) and (COMPILER in path):
+    if (BUILDTYPE in path) and (ARCH in path):
         finalPath = path
         break
 
@@ -41,31 +42,38 @@ with tqdm(total=blockTotal, unit='B', unit_scale=True, desc='Pulling latest buil
 
 
 # unzip build
-with zipfile.ZipFile('build.zip', 'r') as buildZip:
-    for member in tqdm(buildZip.infolist(), desc='Extracting build '):
-        try:
-            buildZip.extract(member, '.')
-        except zipfile.error as e:
-            pass
+if (BUILDTYPE != "macOS"):
+    with zipfile.ZipFile('build.zip', 'r') as buildZip:
+        for member in tqdm(buildZip.infolist(), desc='Extracting build '):
+            try:
+                buildZip.extract(member, '.')
+            except zipfile.error as e:
+                pass
+else:
+    # use native unzip command for mac build target
+    subprocess.run(['unzip', '-oq', 'build.zip'])
 
 # remove zip artifact
 os.remove('build.zip')
 
+if (ASSETS_PATH != ""):
+    os.chdir(os.path.expanduser(ASSETS_PATH))
 
 # github roms stuff
 if os.path.isdir('roms'):
     os.chdir('roms')
-    os.system('git pull')
+    subprocess.run(['git', 'pull'])
     os.chdir('..')
 else:
-    os.system(f'git clone {ROMS_URL}')
+    subprocess.run(['git', 'clone', ROMS_URL])
 
 
 # download assets if requested
 if INCLUDE_ASSETS:
     if os.path.isdir('assets'):
         os.chdir('assets')
-        os.system('git pull')
+        subprocess.run(['git', 'pull'])
         os.chdir('..')
     else:
-        os.system(f'git clone {ASSETS_URL}')
+        subprocess.run(['git', 'clone', ASSETS_PATH])
+        
